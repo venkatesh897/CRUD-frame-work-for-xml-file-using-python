@@ -159,7 +159,6 @@ def update_record():
 	except Exception:
 		print("Error updating record.")
 
-
 functions_list = [create_record, show_all_records, search_record, update_record, deactivate_record, exit]
 
 while True:
