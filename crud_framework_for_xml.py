@@ -1,7 +1,7 @@
 import xml.etree.cElementTree as ET
 
 
-data_file = 'bank_data.xml'
+data_file = 'data.xml'
 error_opening_file = 'File may not exist or error opening file.'
 
  
@@ -98,7 +98,7 @@ def show_all_records():
 					counter = counter + 1
 				print("----------------------")
 	except Exception:
-		print("No xml data present in file.")
+		print("No XML data present in file.")
 	print("Count of records: " + str(count_of_active_records))
 
 
