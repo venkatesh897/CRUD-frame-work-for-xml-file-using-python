@@ -80,11 +80,9 @@ def create_record():
 		
 def show_all_records():
 	field_counter = 0
-	count_of_records = 0
 	count_of_active_records = 0
 	try:
 		for field_values in root.findall('account'):
-			count_of_records = count_of_records + 1
 			status =root[field_counter][1].text
 			field_counter = field_counter + 1
 			if status == 'active':
