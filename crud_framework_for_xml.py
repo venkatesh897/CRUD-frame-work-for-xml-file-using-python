@@ -43,7 +43,7 @@ count_of_fields = get_count_of_fields()
 
 def search_if_record_exists(user_input_id):
 	is_record_exist = False
-	for field_values in root.findall('account'):
+	for field_values in root.findall('record'):
 		record_id = field_values.find(field_variables[0]).text
 		if record_id == user_input_id:
 			is_record_exist = True
@@ -51,7 +51,7 @@ def search_if_record_exists(user_input_id):
 
 def new_id():
     maxid = 0
-    for field_values in root.findall('account'):
+    for field_values in root.findall('record'):
         id= int(field_values.find('id').text)
         if id>maxid:
             maxid=id
@@ -66,7 +66,7 @@ def create_record():
 	else:
 		new_record_id = str(new_id())
 		status = 'active'
-		newrecord = ET.SubElement(root, "account",id=new_record_id)
+		newrecord = ET.SubElement(root, "record",id=new_record_id)
 		ET.SubElement(newrecord, "id", name = "id").text = new_record_id
 		ET.SubElement(newrecord, "status", name = "status").text = status
 		ET.SubElement(newrecord, "account_number", name = "account_number").text = user_input_id
@@ -81,8 +81,10 @@ def create_record():
 def show_all_records():
 	field_counter = 0
 	count_of_active_records = 0
+	count_of_records = 0
 	try:
-		for field_values in root.findall('account'):
+		for field_values in root.findall('record'):
+			count_of_records = count_of_records + 1
 			status =root[field_counter][1].text
 			field_counter = field_counter + 1
 			if status == 'active':
@@ -97,7 +99,7 @@ def search_record():
 	print("Enter", fields[0] + ":", end = "")
 	user_input_id = input()
 	is_record_exist = search_if_record_exists(user_input_id)
-	for field_values in root.findall('account'):
+	for field_values in root.findall('record'):
 		record_id = field_values.find(field_variables[0]).text
 		if record_id == user_input_id:
 			count_of_record = field_values.find("id").text
@@ -117,7 +119,7 @@ def deactivate_record():
 	print("Enter", fields[0] + ":", end = "")
 	user_input_id = input()
 	is_record_exist = search_if_record_exists(user_input_id)
-	for field_values in root.findall('account'):
+	for field_values in root.findall('record'):
 		record_id = field_values.find(field_variables[0]).text
 		if record_id == user_input_id:
 			count_records = field_values.find("id").text
@@ -136,7 +138,7 @@ def update_record():
 	print("Enter", fields[0] + ":", end = "")
 	user_input_id = input()
 	is_record_exist = search_if_record_exists(user_input_id)
-	for field_values in root.findall('account'):
+	for field_values in root.findall('record'):
 		record_id = field_values.find(field_variables[0]).text
 		if record_id == user_input_id:
 			count_records = field_values.find("id").text
