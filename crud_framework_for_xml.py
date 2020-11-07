@@ -3,7 +3,7 @@ import xml.etree.cElementTree as ET
 
 data_file = 'data.xml'
 error_opening_file = 'File may not exist or error opening file.'
-
+record_not_found = 'Record not found'
  
 myroot = ET.parse(data_file)
 root = myroot.getroot()
@@ -52,12 +52,12 @@ def search_if_record_exists(user_input_id):
 	return is_record_exist
 
 def new_id():
-    max_id = 0
+    maxid = 0
     for field_values in root.findall('account'):
         id= int(field_values.find('id').text)
-        if id>max_id:
-            max_id=id
-    return maxi_id+1
+        if id>maxid:
+            maxid=id
+    return maxid+1
 
 def create_record():
 	print("Enter", fields[0] + ":", end = "")
@@ -83,18 +83,18 @@ def create_record():
 
 def show_all_records():
 	field_counter = 0
-	count_records = 0
+	count_of_records = 0
 	count_of_active_records = 0
 	try:
 		for field_values in root.findall('account'):
-			count_records = count_records + 1
+			count_of_records = count_of_records + 1
 			status =root[field_counter][1].text
 			field_counter = field_counter + 1
 			if status == 'active':
 				count_of_active_records = count_of_active_records + 1
 				for counter in range(0,count_of_fields):
 					print(fields[counter] + ":", end="")
-					print(root[count_records - 1][counter + 2].text)
+					print(root[count_of_records - 1][counter + 2].text)
 					counter = counter + 1
 				print("----------------------")
 	except Exception:
@@ -109,14 +109,15 @@ def search_record():
 	for field_values in root.findall('account'):
 		record_id = field_values.find(field_variables[0]).text
 		if record_id == user_input_id:
-			count_records = field_values.find("id").text
+			count_of_record = field_values.find("id").text
 			status = field_values.find('status').text
 			if status == 'active':
 				for counter in range(0,count_of_fields):
 					print(fields[counter] + ":", end="")
-					print(root[int(count_records) - 1][int(counter) + 2].text)
+					print(root[int(count_of_record) - 1][int(counter) + 2].text)
 					counter = counter + 1
-				
+	if is_record_exist == False:
+		print(record_not_found)		
 
 
 
@@ -132,11 +133,13 @@ def deactivate_record():
 			status = field_values.find('status').text
 			if status == 'active':
 				field_values.find('status').text = 'inactive'
+		else:
+			print("Record not found.")
 	try:		
 		myroot.write(data_file)
 		print("Record deactivated successfully.")
 	except Exception:
-		print("Error deactivating record.")
+		print(record_not_found)
 
 
 
@@ -158,6 +161,8 @@ def update_record():
 				print("Enter new " + fields[user_option] + ": ", end="")
 				updated_data = input()
 				field_values.find(field_variables[user_option]).text = updated_data
+		else:
+			print(record_not_found)
 	try:
 		myroot.write(data_file)
 		print("Record updated successfully.")
