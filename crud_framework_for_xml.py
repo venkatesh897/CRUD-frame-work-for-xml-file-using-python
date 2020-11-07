@@ -77,8 +77,9 @@ def create_record():
 			print("Enter " , fields[field_counter] + ":" ,end = "")
 			field_value = input()
 			ET.SubElement(newrecord, field_variables[field_counter], name = field_variables[field_counter]).text = field_value
+		print("Record saved successfully.")
+		myroot.write(data_file)
 		
-	myroot.write(data_file)
 
 def show_all_records():
 	field_counter = 0
@@ -131,8 +132,11 @@ def deactivate_record():
 			status = field_values.find('status').text
 			if status == 'active':
 				field_values.find('status').text = 'inactive'
-				
-	myroot.write(data_file)
+	try:		
+		myroot.write(data_file)
+		print("Record deactivated successfully.")
+	except Exception:
+		print("Error deactivating record.")
 
 
 
@@ -154,7 +158,11 @@ def update_record():
 				print("Enter new " + fields[user_option] + ": ", end="")
 				updated_data = input()
 				field_values.find(field_variables[user_option]).text = updated_data
-	myroot.write(data_file)
+	try:
+		myroot.write(data_file)
+		print("Record updated successfully.")
+	except Exception:
+		print("Error updating record.")
 
 
 functions_list = [create_record, show_all_records, search_record, update_record, deactivate_record, exit]
