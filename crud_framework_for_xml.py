@@ -4,6 +4,7 @@ import xml.etree.cElementTree as ET
 data_file = 'data.xml'
 error_opening_file = 'File may not exist or error opening file.'
 record_not_found = 'Record not found'
+invalid_input = "INVALID INPUT"
  
 myroot = ET.parse(data_file)
 root = myroot.getroot()
@@ -92,10 +93,7 @@ def show_all_records():
 			field_counter = field_counter + 1
 			if status == 'active':
 				count_of_active_records = count_of_active_records + 1
-				for counter in range(0,count_of_fields):
-					print(fields[counter] + ":", end="")
-					print(root[count_of_records - 1][counter + 2].text)
-					counter = counter + 1
+				show_record(count_of_records)
 				print("----------------------")
 	except Exception:
 		print("No XML data present in file.")
@@ -112,13 +110,15 @@ def search_record():
 			count_of_record = field_values.find("id").text
 			status = field_values.find('status').text
 			if status == 'active':
-				for counter in range(0,count_of_fields):
-					print(fields[counter] + ":", end="")
-					print(root[int(count_of_record) - 1][int(counter) + 2].text)
-					counter = counter + 1
+				show_record(count_of_record)
 	if is_record_exist == False:
 		print(record_not_found)		
 
+def show_record(count_of_record):
+	for counter in range(0,count_of_fields):
+		print(fields[counter] + ":", end="")
+		print(root[int(count_of_record) - 1][int(counter) + 2].text)
+		counter = counter + 1
 
 
 
@@ -175,5 +175,13 @@ functions_list = [create_record, show_all_records, search_record, update_record,
 
 while True:
 	print(menu)
-	user_option = int(input("Enter option: "))
-	functions_list[user_option - 1]()
+	try:
+		user_option = int(input("Enter option: "))
+	except Exception:
+		print(invalid_input)
+		continue
+	if user_option >=1 and user_option <= 6:
+		functions_list[user_option - 1]()
+	else:
+		print(invalid_input)
+	
