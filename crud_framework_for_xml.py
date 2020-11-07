@@ -52,12 +52,12 @@ def search_if_record_exists(user_input_id):
 	return is_record_exist
 
 def new_id():
-    maxid = 0
+    max_id = 0
     for field_values in root.findall('account'):
         id= int(field_values.find('id').text)
-        if id>maxid:
-            maxid=id
-    return maxid+1
+        if id>max_id:
+            max_id=id
+    return maxi_id+1
 
 def create_record():
 	print("Enter", fields[0] + ":", end = "")
