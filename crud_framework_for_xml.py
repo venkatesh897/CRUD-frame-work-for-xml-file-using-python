@@ -1,4 +1,5 @@
 import xml.etree.cElementTree as ET
+from prettytable import PrettyTable
 
 data_file = 'data.xml'
 error_opening_file = 'File may not exist or error opening file.'
@@ -7,6 +8,7 @@ invalid_input = "INVALID INPUT"
  
 myroot = ET.parse(data_file)
 root = myroot.getroot()
+
 
 try:
 	with open("menu.cfg") as f_menu:
@@ -23,6 +25,7 @@ except Exception:
 	print(error_opening_file)
 
 fields = eval(field)
+table = PrettyTable(fields)
 
 try:
 	with open("field_variables_file.cfg") as f_variables:
@@ -48,6 +51,26 @@ def search_if_record_exists(user_input_id):
 		if record_id == user_input_id:
 			is_record_exist = True
 	return is_record_exist
+
+def get_status(user_input_id):
+	for field_values in root.findall('record'):
+		record_id = field_values.find(field_variables[0]).text
+		if record_id == user_input_id:
+			status = field_values.find('status').text
+	return status
+
+def get_count_of_id(user_input_id):
+	for field_values in root.findall('record'):
+		record_id = field_values.find(field_variables[0]).text
+		if record_id == user_input_id:
+			count_of_record = field_values.find("id").text
+	return count_of_record			
+
+def change_status(user_input_id):
+	for field_values in root.findall('record'):
+		record_id = field_values.find(field_variables[0]).text
+		if record_id == user_input_id:
+			field_values.find('status').text = 'inactive'
 
 def new_id():
     maxid = 0
@@ -89,8 +112,9 @@ def show_all_records():
 			field_counter = field_counter + 1
 			if status == 'active':
 				count_of_active_records = count_of_active_records + 1
-				show_record(count_of_records)
-				print("----------------------")
+				table = show_record(count_of_records)
+		print(table)
+		table.clear_rows()		
 	except Exception:
 		print("No XML data present in file.")
 	print("Count of records: " + str(count_of_active_records))
@@ -99,35 +123,37 @@ def search_record():
 	print("Enter", fields[0] + ":", end = "")
 	user_input_id = input()
 	is_record_exist = search_if_record_exists(user_input_id)
-	for field_values in root.findall('record'):
-		record_id = field_values.find(field_variables[0]).text
-		if record_id == user_input_id:
-			count_of_record = field_values.find("id").text
-			status = field_values.find('status').text
-			if status == 'active':
-				show_record(count_of_record)
+	if is_record_exist == True:
+		count_of_record = get_count_of_id(user_input_id)
+		status = get_status(user_input_id)
+		if status == 'active':
+			table = show_record(count_of_record)
+			print(table)
 	if is_record_exist == False:
 		print(record_not_found)		
 
 def show_record(count_of_record):
+	field_values = []
 	for counter in range(0,count_of_fields):
-		print(fields[counter] + ":", end="")
-		print(root[int(count_of_record) - 1][int(counter) + 2].text)
+		data = root[int(count_of_record) - 1][int(counter) + 2].text
+		field_values.append(data)
 		counter = counter + 1
+	table.add_row(field_values)
+	return table
+
+
 
 def deactivate_record():
 	print("Enter", fields[0] + ":", end = "")
 	user_input_id = input()
 	is_record_exist = search_if_record_exists(user_input_id)
-	for field_values in root.findall('record'):
-		record_id = field_values.find(field_variables[0]).text
-		if record_id == user_input_id:
-			count_records = field_values.find("id").text
-			status = field_values.find('status').text
-			if status == 'active':
-				field_values.find('status').text = 'inactive'
-		else:
-			print("Record not found.")
+	if is_record_exist == True:
+		count_of_record = get_count_of_id(user_input_id)
+		status = get_status(user_input_id)
+		if status == 'active':
+			change_status(user_input_id)
+	else:
+		print("Record not found.")
 	try:		
 		myroot.write(data_file)
 		print("Record deactivated successfully.")
@@ -151,13 +177,15 @@ def update_record():
 				print("Enter new " + fields[user_option] + ": ", end="")
 				updated_data = input()
 				field_values.find(field_variables[user_option]).text = updated_data
-		else:
-			print(record_not_found)
-	try:
-		myroot.write(data_file)
-		print("Record updated successfully.")
-	except Exception:
-		print("Error updating record.")
+	if is_record_exist == False:
+		print(record_not_found)
+	else:
+		try:
+			myroot.write(data_file)
+			print("Record updated successfully.")
+		except Exception:
+			print("Error updating record.")
+
 
 functions_list = [create_record, show_all_records, search_record, update_record, deactivate_record, exit]
 
@@ -168,8 +196,20 @@ while True:
 	except Exception:
 		print(invalid_input)
 		continue
-	if user_option >=1 and user_option <= 6:
+	if user_option >=1 and user_option <= 5:
 		functions_list[user_option - 1]()
+		print()
+	elif user_option:
+		print("Press 'y' to exit or 'n' to continue")
+		user_input = input("Enter option: ")
+		if(user_input.upper() == 'Y'):
+			functions_list[user_option - 1]()
+			print()
+		elif(user_input.upper() == 'N'):
+			print()
+		else:
+			print(invalid_input)
+
 	else:
 		print(invalid_input)
 	
